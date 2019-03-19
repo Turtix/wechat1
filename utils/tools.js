@@ -52,7 +52,6 @@ function formatJsData(jsData){
     return userData;
 }
 
-
 module.exports = {
     getUserDataAsync,
     parseXmlData,
