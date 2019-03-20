@@ -4,10 +4,11 @@
 const sha1 = require('sha1');
 const {getUserDataAsync,parseXmlData,formatJsData} = require('../utils/tools');
 const  {createModel} = require('./template');
+const {handleResponse} = require('./handleResponse');
 
 function middleWhile() {
     return async (req, res) => {
-        console.log(req.query);//微信服务器发送过来的请求参数
+        // console.log(req.query);//微信服务器发送过来的请求参数
 
         const { signature, echostr, timestamp, nonce } = req.query;
         const token = 'Turtix127';
@@ -46,27 +47,11 @@ function middleWhile() {
             const userData = formatJsData(jsData);
 
             //实现自动回复功能
-            let options = {
-                toUserName: userData.FromUserName,
-                fromUserName: userData.ToUserName,
-                createTime: Date.now(),
-                type:'text',
-                content: '请输入你想知道的内容'
-            };
+            const  options = handleResponse(userData);
 
-            if(userData.Content === '11'){
-                options.content = '明月几时有?';
-            }else if(userData.Content && userData.Content.indexOf('12') !== -1){
-                //模糊匹配
-                options.content = '把酒问青天';
-            }
-            if(userData.MsgType === 'image'){
-                //将用户发送的图片，返回回去
-                options.mediaId = userData.MediaId;
-                options.type = 'image';
-            }
+            //回复用户消息
             const replyMessage = createModel(options);
-            console.log(replyMessage);
+            // console.log(replyMessage);
             res.send(replyMessage);
         }else{
             res.end('error');
