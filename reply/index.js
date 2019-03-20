@@ -7,7 +7,7 @@ const  {createModel} = require('./template');
 
 function middleWhile() {
     return async (req, res) => {
-        // console.log(req.query);//微信服务器发送过来的请求参数
+        console.log(req.query);//微信服务器发送过来的请求参数
 
         const { signature, echostr, timestamp, nonce } = req.query;
         const token = 'Turtix127';
@@ -66,7 +66,7 @@ function middleWhile() {
                 options.type = 'image';
             }
             const replyMessage = createModel(options);
-            // console.log(replyMessage);
+            console.log(replyMessage);
             res.send(replyMessage);
         }else{
             res.end('error');
