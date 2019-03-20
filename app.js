@@ -2,7 +2,7 @@ const express = require('express');
 
 const app = express();
 
-const  {middleWhile} = require('./reply');
+const  {middleWhile} = require('./reply/index');
 
 //中間件
 app.use(middleWhile());

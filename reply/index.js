@@ -3,6 +3,7 @@
 */
 const sha1 = require('sha1');
 const {getUserDataAsync,parseXmlData,formatJsData} = require('../utils/tools');
+const  {createModel} = require('./template');
 
 function middleWhile() {
     return async (req, res) => {
@@ -15,7 +16,9 @@ function middleWhile() {
         // 2）将三个参数字符串拼接成一个字符串进行sha1加密
         const sha1Str = sha1([token, timestamp, nonce].sort().join(''));
 
-        if(req.mathod === 'GET'){
+        // console.log(signature,sha1Str);
+
+        if(req.method === 'GET'){
             //3）开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
             if(sha1Str === signature){
 
@@ -43,28 +46,31 @@ function middleWhile() {
             const userData = formatJsData(jsData);
 
             //实现自动回复功能
-            let content = '请输入你想知道的内容';
-            if(userData.Content === '11'){
-                content = '明月几时有?';
-            }else if(userData.Content.indexOf('12') !== -1){
-                //模糊匹配
-                content = '把酒问青天';
-            }
+            let options = {
+                toUserName: userData.FromUserName,
+                fromUserName: userData.ToUserName,
+                createTime: Date.now(),
+                type:'text',
+                content: '请输入你想知道的内容'
+            };
 
-            const replayMassage = `<xml>
-                <ToUserName><![CDATA[${userData.FromUserName}]]></ToUserName>
-                <FromUserName><![CDATA[${userData.ToUserName}]]></FromUserName>
-                <CreateTime>${Date.now()}</CreateTime>
-                <MsgType><![CDATA[text]]></MsgType>
-                <Content><![CDATA[${content}]]></Content>
-              </xml>`;
-            res.send(replayMassage);
+            if(userData.Content === '11'){
+                options.content = '明月几时有?';
+            }else if(userData.Content && userData.Content.indexOf('12') !== -1){
+                //模糊匹配
+                options.content = '把酒问青天';
+            }
+            if(userData.MsgType === 'image'){
+                //将用户发送的图片，返回回去
+                options.mediaId = userData.MediaId;
+                options.type = 'image';
+            }
+            const replyMessage = createModel(options);
+            // console.log(replyMessage);
+            res.send(replyMessage);
         }else{
             res.end('error');
-
         }
-
-
     }
 }
 module.exports = {
