@@ -1,60 +1,90 @@
 /*
-  定义获取access_token的模块
-    1. 是什么？
-      是公众号的全局唯一接口调用凭据，公众号调用各接口时都需使用access_token
-    2. 特点：
-      - 有效期2小时，（2小时必须更新1次， 重复获取将导致上次获取的access_token失效。）
-      - 唯一性
-      - 大小512字符
-    3. 请求地址
-      https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
-    4. 请求方式 GET
-    5. 设计
-      - 第一次：发送请求、获取access_token，保存起来，设置过期时间
-      - 第二次：读取本地保存access_token，判断有没有过期
-        - 没有过期， 直接使用
-        - 过期了， 重新发送请求、获取access_token，保存起来，设置过期时间
-    6. 整理
-       一上来读取本地保存access_token，
-        有：
-          判断有没有过期
-            - 没有过期， 直接使用
-            - 过期了， 重新发送请求、获取access_token，保存起来，设置过期时间
-        没有
-          发送请求、获取access_token，保存起来，设置过期时间
-
+  实现微信公众号提供的各个接口
  */
-/*
-    发送请求,获取acess_token,保存起来,设置过期时间.
-*/
 //引入request-promise-native.
 const  rp = require('request-promise-native');
-const  {writeFile} = require('fs');
+const  {fetchAccessToken} = require('./accessToken');
+// 菜单配置项
+const  menu = {
+    'button':[
+        {
+            'type':'click',
+            'name':'首页☀',
+            'key':'home'
+        },
+        {
+            'name':'菜单🌏',
+            'sub_button':[
+                {
+                    'type':'view', // 跳转到指定网址
+                    'name':'git官网',
+                    'url':'https://github.com/Turtix/wechat1.git'
+                },
+                {
+                    'type': 'scancode_waitmsg',
+                    'name': '扫码带提示',
+                    'key': '扫码带提示'
+                },
+                {
+                    'type': 'scancode_push',
+                    'name': '扫码推事件',
+                    'key': '扫码推事件',
+                },
+                {
+                    'type': 'pic_sysphoto',
+                    'name': '系统拍照发图',
+                    'key': 'rselfmenu_1_0'
+                },
+                {
+                    'type': 'pic_photo_or_album',
+                    'name': '拍照或者相册发图',
+                    'key': 'rselfmenu_1_1'
+                }
+                ]
+        },
+        {
+            'name':'菜单二🗻',
+            'sub_button':[
+                {
+                    'type': 'pic_weixin',
+                    'name': '微信相册发图',
+                    'key': 'rselfmenu_1_2'
+                },
+                {
+                    'name': '发送位置',
+                    'type': 'location_select',
+                    'key': 'rselfmenu_2_0'
+                }
+                ]
+        }
+    ]
+}
 
-async function getAccessToken(){
-    const appId = 'wxf1af390dbfe42ec1';
-    const appSecret = '0f9c77f9fcf3b6fe9257804adae4abe5';
-    //定义请求
-    const  url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`;
+//创建菜单   创建菜单之前必须把之前的菜单删除掉.
+async function createMenu(){
+    //1.定义请求  需要拿到access_token.
+    const {access_token} =await fetchAccessToken(); //解构赋值.
+    const  url = `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${access_token}`;
 
-    // 发送请求
-    // 下载了 request request-promise-native
-    const  result =await rp({method: 'GET', url,json: true});
-    // console.log(result);
+    // 2.发送请求  需要引入request-promise-native.  rp(...)返回的是一个promise对象.
+    const  result =await rp({method: 'POST', url, json: true, body: menu});
 
-    // 设置过期时间 2小时更新，提前5分钟刷新
-    result.expires_in = Date.now()+7200000 -300000;
-
-    // 保存为一个文件 ---> 只能保存字符串数据，将js对象转换为json字符串
-    writeFile('./accessToken.txt',JSON.stringify(result), err =>{
-            if(!err){
-                console.log('acess_token文件保存成功!')
-            }else {
-                console.log(err);
-            }
-    });
-
-    // 返回获取好的access_token
     return result;
 }
-getAccessToken();
+
+//删除菜单
+async function deleteMenu(){
+    const {access_token} =await fetchAccessToken(); //解构赋值.
+    const  url = `https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=${access_token}`;
+    const  result =await rp({method: 'GET', url,json:true});
+    return result;
+}
+
+//测试创建菜单
+//上面async函数返回的是一个promise对象,需要await获取它的值.
+(async ()=>{
+    let result = await deleteMenu();
+    console.log(result);
+    result = await createMenu();
+    console.log(result);
+})()

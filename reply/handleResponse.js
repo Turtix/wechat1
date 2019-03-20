@@ -10,7 +10,7 @@ function handleResponse(userData){
         createTime: Date.now(),
         type:'text',
         //设置关注后的自动提示语
-        content:'欢迎关注公众号~'
+        content:'请输入你想知道的内容~'
     };
 
     if(userData.MsgType === 'text'){
@@ -19,8 +19,6 @@ function handleResponse(userData){
         }else if(userData.Content && userData.Content.indexOf('12') !== -1){
             //模糊匹配
             options.content = '把酒问青天';
-        }else {
-            options.content = '请输入你想知道的内容';
         }
     } else if(userData.MsgType === 'image'){
         //将用户发送的图片，返回回去
@@ -35,6 +33,21 @@ function handleResponse(userData){
                             \n地理位置经度: ${userData.Location_Y}
                             \n地图缩放大小: ${userData.Scale}
                             \n地理位置信息: ${userData.Label}`;
+    }else if(userData.MsgType === 'event'){
+       //接收事件推送
+        if (userData.Event === 'subscribe') {
+            // 用户订阅事件
+            options.content = '欢迎你关注公众号~';
+            if(userData.EventKey){
+                // 扫描带参数的二维码 --> 不是普通二维码  活动中使用
+                options.content = '欢迎扫描带参数二维码， 关注公众号~';
+            }
+        }else if(userData.Event === 'unsubscribe'){
+            //取消关注
+            console.log('无情取关~');
+            // 如果不给值， 微信服务器会请求三次
+            options.content = '';
+        }
     }
     return options;
 }
