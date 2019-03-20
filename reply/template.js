@@ -47,15 +47,21 @@ function createModel(options){
 
     switch (options.type) {
         case 'text':
-            replyMessage+= `<Content><![CDATA[${options.content}]]></Content>`;break;
+            replyMessage+= `<Content><![CDATA[${options.content}]]></Content>`;
+            break;
         case 'image':
-            replyMessage+= `<Image><MediaId><![CDATA[${options.mediaId}]]></MediaId></Image>`;break;
+            replyMessage+= `<Image><MediaId><![CDATA[${options.mediaId}]]></MediaId></Image>`;
+            break;
+        case 'voice':
+            replyMessage += `<Voice><MediaId><![CDATA[${options.mediaId}]]></MediaId></Voice>`;
+            break;
         case 'video':
             replyMessage+= `<Video>
                                     <MediaId><![CDATA[${options.mediaId}]]></MediaId>
                                     <Title><![CDATA[${options.title}]]></Title>
                                     <Description><![CDATA[${options.description}]]></Description>
-                                  </Video>`;break;
+                                  </Video>`;
+            break;
         case 'music':
             replyMessage+= `<Music>
                                     <Title><![CDATA[${options.title}]]></Title>
@@ -63,7 +69,8 @@ function createModel(options){
                                     <MusicUrl><![CDATA[${options.musicUrl}]]></MusicUrl>
                                     <HQMusicUrl><![CDATA[${options.hqMusicUrl}]]></HQMusicUrl>
                                     <ThumbMediaId><![CDATA[${options.mediaId}]]></ThumbMediaId>
-                                  </Music>`;break;
+                                  </Music>`;
+            break;
         case 'news':
             replyMessage+= `<ArticleCount>${options.content.length}</ArticleCount><Articles>`;
                     options.content.forEach((item)=>{
