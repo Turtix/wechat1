@@ -154,37 +154,23 @@ async function batchUsersTag(openid_list,tagid){
     return rp({method: 'POST', url,json:true,body:options});;
 }
 
-//测试创建菜单
-//上面async函数返回的是一个promise对象,需要await获取它的值.
+/**
+ * 获取用户基本信息
+ * @param openid_list
+ * @param tagid
+ * @returns {Promise<void>}
+ */
+async function getUserInfo(openid){
+    // 获取access_token
+    const {access_token} =await fetchAccessToken(); //解构赋值.
+    // 定义请求
+    const  url = `${URL_PREFIX}user/info?access_token=${access_token}&openid=${openid}&lang=zh_CN`;
+    // 发送请求
+    return rp({method: 'GET', url,json:true});;
+}
+
 (async ()=>{
-    //创建标签:  深圳的粉丝
-    // let result1  = await createTag('广东');
-    // console.log(result1);  //{ tag: { id: 103, name: '广东', count: 2 } }
-
-    //获取公众号已创建的标签
-    const  result = await getAllTags();
-    console.log(result);
-        /*
-        { tags:
-           [ { id: 2, name: '星标组', count: 0 },
-             { id: 100, name: '深圳的粉丝', count: 0 },
-             { id: 101, name: '铁粉', count: 0 },
-             { id: 102, name: '铁粉~', count: 0 },
-             { id: 103, name: '广东', count: 2 } ] }
-        */
-    //批量为多个用户打标签
-     var arr = ['odRYr6MoiP3rw6qbLmzolhG2eTvo','odRYr6EtFCJbTqBr_-qu7OFXEuf4'];
-     const result2 = await batchUsersTag(arr,result.tags[3].id);
-    console.log(result2);  //{ errcode: 0, errmsg: 'ok' }
-
-    // //获取标签下的所有粉丝列表.
-    const result3 = await getTagUsers(result.tags[3].id);
-    console.log(result3);
-    /*  { count: 2,
-        data:
-        { openid:
-            [ 'odRYr6MoiP3rw6qbLmzolhG2eTvo',
-                'odRYr6EtFCJbTqBr_-qu7OFXEuf4' ] },
-        next_openid: 'odRYr6EtFCJbTqBr_-qu7OFXEuf4' }
-        */
+    const openid = 'odRYr6EtFCJbTqBr_-qu7OFXEuf4';
+    const result =await getUserInfo(openid);
+    console.log(result)
 })()
