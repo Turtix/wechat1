@@ -169,8 +169,44 @@ async function getUserInfo(openid){
     return rp({method: 'GET', url,json:true});;
 }
 
+/**
+ * 根据标签进行群发消息
+ * @param body
+ * @returns {Promise<void>}
+ */
+async function massSendAll(body){
+    // 获取access_token
+    const {access_token} =await fetchAccessToken(); //解构赋值.
+    // 定义请求
+    const  url = `${URL_PREFIX}message/mass/sendall?access_token=${access_token}`;
+    // 发送请求
+    return rp({method: 'POST', url,json:true,body});;
+}
+
 (async ()=>{
-    const openid = 'odRYr6EtFCJbTqBr_-qu7OFXEuf4';
-    const result =await getUserInfo(openid);
-    console.log(result)
+    //获取用户基本信息
+    // const openid = 'odRYr6EtFCJbTqBr_-qu7OFXEuf4';
+    // const result =await getUserInfo(openid);
+    // console.log(result)
+
+    // const  result = await getAllTags();
+
+    //批量为多个用户打标签
+    // var arr = ['odRYr6MoiP3rw6qbLmzolhG2eTvo','odRYr6LFajvZFY2wL7oMuEmFTjdE','odRYr6MZDugUvtR1gKyjRSbnUxY8'];
+    // const result2 = await batchUsersTag(arr,result.tags[1].id);
+    // console.log(result2);  //{ errcode: 0, errmsg: 'ok' }
+
+    //根据标签进行群发消息
+    const body = {
+            "filter":{
+                "is_to_all":false, // 是否添加进历史记录
+                "tag_id":100
+            },
+            "text":{
+                "content":'测试群发消息~ \n点击会有更多惊喜 \n<a href=\"https://blog.csdn.net/runner668/article/details/79775545">学习排序</a>'
+            },
+            "msgtype":"text"
+        }
+    const result3 = await massSendAll(body);
+    console.log(result3);
 })()
