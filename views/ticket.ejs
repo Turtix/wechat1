@@ -8,17 +8,76 @@
     <title>Document</title>
 </head>
 <body>
-
+    <h1 id="btn">点击开始录音</h1>
 </body>
 <script type="text/javascript" src="http://res2.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.0rc1/zepto.min.js"></script>
 <script type="text/javascript" >
-    wx.config({
-        debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-        appId: '', // 必填，公众号的唯一标识
-        timestamp: , // 必填，生成签名的时间戳
-        nonceStr: '', // 必填，生成签名的随机串
-        signature: '',// 必填，签名
-        jsApiList: [] // 必填，需要使用的JS接口列表
-    });
+    $(function(){
+        //通过config接口注入权限验证配置
+        wx.config({
+            debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: 'wxf1af390dbfe42ec1', // 必填，公众号的唯一标识
+            timestamp: '<%= timestamp %>', // 必填，生成签名的时间戳
+            nonceStr: '<%= noncestr %>', // 必填，生成签名的随机串
+            signature: '<%= signature %>',// 必填，签名
+            jsApiList: [    // 必填，需要使用的JS接口列表
+                'updateAppMessageShareData', //分享数据给微信好友
+                'updateTimelineShareData',    //分享到朋友圈
+                'onMenuShareQZone', //分享到qq空间
+                'startRecord',  //开启录音接口
+                'stopRecord',   //结束录音接口
+                'translateVoice'  //录音转换接口
+            ]
+        });
+
+        wx.ready(function(){
+            // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，
+            // config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。
+            // 对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+        });
+
+        //移动端点击事件
+        let  flag = false;
+        $('#btn').tap(function () {
+            if(flag){
+                //正在录音
+                wx.stopRecord({
+                    success: function (res) {
+                        var localId = res.localId;
+                        wx.translateVoice({
+                            localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+                            isShowProgressTips: 1, // 默认为1，显示进度提示
+                            success: function (res) {
+                                alert(res.translateResult); // 语音识别的结果
+                            }
+                        });
+                        flag = false;
+                    }
+                });
+            }else{
+                //没在录音
+                wx.startRecord();
+                flag = true;
+            }
+        });
+
+        // 开发中测试接口是否可以使用
+        wx.checkJsApi({
+            jsApiList: [   // 需要检测的JS接口列表，所有JS接口列表见附录2,
+                'updateAppMessageShareData',
+                'updateTimelineShareData',
+                'onMenuShareQZone',
+                'startRecord',
+                'stopRecord',
+                'translateVoice'
+            ],
+            success: function(res) {
+                // 以键值对的形式返回，可用的api值true，不可用为false
+                // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
+                console.log(res);
+            }
+        });
+    })
 </script>
 </html>

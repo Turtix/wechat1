@@ -10,16 +10,20 @@ function handleResponse(userData){
         createTime: Date.now(),
         type:'text',
         //设置关注后的自动提示语
-        content:'请输入你想知道的内容~'
+        content:'请输入你想知道的内容~ \n输入1,获取内容一\n输入2,获取内容二\n输入3,进行语音识别'
     };
 
     if(userData.MsgType === 'text'){
-        if(userData.Content === '11'){
+        if(userData.Content === '1'){
             options.content = '明月几时有?';
-        }else if(userData.Content && userData.Content.indexOf('12') !== -1){
+        }else if(userData.Content && userData.Content.indexOf('2') !== -1){
             //模糊匹配
             options.content = '把酒问青天';
+        }else if(userData.Content ==='3'){
+            options.content = `<a href="http://db727468.ngrok.io/search">点击进入语音识别</a>`;
+
         }
+
     } else if(userData.MsgType === 'image'){
         //将用户发送的图片，返回回去
         options.mediaId = userData.MediaId;

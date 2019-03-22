@@ -52,10 +52,10 @@ function fetchTicket() {
 }
 
 // 测试获取到有效的ticket.
-(async () => {
+/*(async () => {
     const result = await fetchTicket();
     console.log(result);
-})()
+})()*/
 
 module.exports = {
     fetchTicket
