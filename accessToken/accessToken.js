@@ -3,15 +3,14 @@
 //引入request-promise-native.
 const  rp = require('request-promise-native');
 const { writeFileAsync,readFileAsync } = require('../utils/tools');
-
+const  { appId,appSecret } = require('../config');
+const  { URL_PREFIX } = require('../config');
 /*
     发送请求,获取acess_token,保存起来,设置过期时间.
 */
 async function getAccessToken(){
-    const appId = 'wxf1af390dbfe42ec1';
-    const appSecret = '0f9c77f9fcf3b6fe9257804adae4abe5';
     //1.定义请求
-    const  url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`;
+    const  url = `${ URL_PREFIX }token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`;
 
     // 2.发送请求
     // 下载了 request request-promise-native

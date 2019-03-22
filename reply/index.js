@@ -5,13 +5,13 @@ const sha1 = require('sha1');
 const {getUserDataAsync,parseXmlData,formatJsData} = require('../utils/tools');
 const  {createModel} = require('./template');
 const {handleResponse} = require('./handleResponse');
+const  { token } = require('../config');
 
 function middleWhile() {
     return async (req, res) => {
         // console.log(req.query);//微信服务器发送过来的请求参数
 
         const { signature, echostr, timestamp, nonce } = req.query;
-        const token = 'Turtix127';
 
         // 1）将token、timestamp、nonce三个参数进行字典序排序
         // 2）将三个参数字符串拼接成一个字符串进行sha1加密

@@ -1,6 +1,7 @@
 /*
     处理用户发送的消息,定义响应的数据.
 */
+const  { url } = require('../config');
 
 //实现自动回复功能
 function handleResponse(userData){
@@ -20,8 +21,7 @@ function handleResponse(userData){
             //模糊匹配
             options.content = '把酒问青天';
         }else if(userData.Content ==='3'){
-            options.content = `<a href="http://73449978.ngrok.io/search">点击进入语音识别</a>`;
-
+            options.content = `<a href="${url}/search">点击进入语音识别</a>`;
         }
 
     } else if(userData.MsgType === 'image'){

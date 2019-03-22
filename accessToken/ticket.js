@@ -1,10 +1,9 @@
 
-
 //引入request-promise-native.
 const  rp = require('request-promise-native');
 const  {fetchAccessToken} = require('./accessToken');
 const { writeFileAsync,readFileAsync } = require('../utils/tools');
-
+const  { URL_PREFIX } = require('../config');
 /*
     发送请求,获取ticket,保存起来,设置过期时间.
 */
@@ -12,7 +11,7 @@ async function getTicket(){
     // 获取access_token
     const {access_token} = await fetchAccessToken(); //解构赋值.
     //1.定义请求
-    const  url = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${access_token}&type=jsapi`;
+    const  url = `${ URL_PREFIX }ticket/getticket?access_token=${access_token}&type=jsapi`;
 
     // 2.发送请求
     // 下载了 request request-promise-native

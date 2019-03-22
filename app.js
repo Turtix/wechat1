@@ -4,6 +4,7 @@ const app = express();
 
 const  { middleWhile } = require('./reply/index');
 const  { fetchTicket } = require('./accessToken/ticket');
+const  { url, appId } = require('./config');
 
 //配置ejs
 app.set('views','views');
@@ -23,17 +24,16 @@ app.get('/search',async  (req,res)=>{
   const { ticket } = await  fetchTicket();
   const noncestr =  Math.random().toString().slice(2); //生成随机字符串
   const timestamp = Math.round(Date.now() / 1000);  //时间戳单位是s.
-  const url = 'http://73449978.ngrok.io/search';      //当前网页的URL(ngrok网址)
   const arr = [
       `noncestr=${noncestr}`,
       `jsapi_ticket=${ticket}`,
       `timestamp=${timestamp}`,
-      `url=${url}`
+      `url=${url}/search`
   ];
 
   const signature = sha1(arr.sort().join('&'));
 
-  res.render('ticket.ejs', {noncestr,timestamp, signature});
+  res.render('ticket.ejs', {noncestr,timestamp, signature,appId,url});
 });
 
 //中間件
