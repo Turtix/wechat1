@@ -9,6 +9,9 @@ const  { fetchTicket } = require('./accessToken/ticket');
 app.set('views','views');
 app.set('view engine', 'ejs');
 
+//不能访问一个在线的图片,需要将图片下载到本地.用静态资源的方式引入.
+app.use(express.static('images'));
+
 //因为中间件里面有返回请求,如果写在中间见后面,需要调用next方法.之前的逻辑需要修改,
 // 所以把路由放在中间件前面.
 app.get('/search',async  (req,res)=>{
@@ -20,7 +23,7 @@ app.get('/search',async  (req,res)=>{
   const { ticket } = await  fetchTicket();
   const noncestr =  Math.random().toString().slice(2); //生成随机字符串
   const timestamp = Math.round(Date.now() / 1000);  //时间戳单位是s.
-  const url = 'http://db727468.ngrok.io/search';      //当前网页的URL(ngrok网址)
+  const url = 'http://73449978.ngrok.io/search';      //当前网页的URL(ngrok网址)
   const arr = [
       `noncestr=${noncestr}`,
       `jsapi_ticket=${ticket}`,
