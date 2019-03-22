@@ -2,7 +2,7 @@
 
 //引入request-promise-native.
 const  rp = require('request-promise-native');
-const  {writeFile,readFile} = require('fs');
+const { writeFileAsync,readFileAsync } = require('../utils/tools');
 
 /*
     发送请求,获取acess_token,保存起来,设置过期时间.
@@ -16,19 +16,13 @@ async function getAccessToken(){
     // 2.发送请求
     // 下载了 request request-promise-native
     const  result =await rp({method: 'GET', url,json: true});
-    // console.log(result);
 
     // 3.设置过期时间 2小时更新，提前5分钟刷新
     result.expires_in = Date.now()+7200000 -300000;
 
     // 4.保存为一个文件 ---> 只能保存字符串数据，将js对象转换为json字符串
-    writeFile('./accessToken.txt',JSON.stringify(result), err =>{
-            if(!err){
-                console.log('acess_token文件保存成功!')
-            }else {
-                console.log(err);
-            }
-    });
+    await  writeFileAsync('./accessToken.txt',result);
+
     //5. 返回获取好的access_token
     return result;
 }
@@ -40,18 +34,7 @@ function fetchAccessToken() {
     //return 会将then和catch的返回值作为结果返回出去.
     // 如果then和catch的返回值是一个promise对象,就直接把它作为结果返回.
     //如果then和catch的返回值不是promise对象,就在它的外面包裹一层promise,并作为结果返回.
-    return new Promise((resolve,reject)=>{
-        readFile('./accessToken.txt',(err,data)=>{
-            if(!err){
-                //之前有保存文件
-                //将buffer数据转成json (data.toString()),再将json字符串转成js对象 (JSON.parse(data.toString())).
-                resolve(JSON.parse(data.toString()));
-            }else{
-                //之前没有保存文件
-                reject(err);
-            }
-        })
-    })
+    return readFileAsync('./accessToken.txt')
         .then((res)=>{
             if(res.expires_in < Date.now()){
                 //之前保存的文件过期了,就重新获取.

@@ -5,6 +5,7 @@
 const  rp = require('request-promise-native');
 const  {fetchAccessToken} = require('./accessToken');
 
+
 const URL_PREFIX = 'https://api.weixin.qq.com/cgi-bin/';
 
 // 菜单配置项

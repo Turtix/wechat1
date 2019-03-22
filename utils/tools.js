@@ -2,6 +2,9 @@
     工具函数模块
 */
 const { parseString } = require('xml2js');
+const  {writeFile,readFile} = require('fs');
+const { resolve } = require('path');
+
 //获取用户数据方法
 function getUserDataAsync(req){
     return new Promise((resolve,reject)=>{
@@ -52,9 +55,50 @@ function formatJsData(jsData){
     return userData;
 }
 
+/**
+ * 写入文件方法
+ * @param filePath
+ * @param data
+ */
+function writeFileAsync(filePath,data){
+    filePath = resolve(__dirname,'../accessToken',filePath);
+    return new Promise((resolve,reject)=>{
+        writeFile(filePath,JSON.stringify(data), err =>{
+            if(!err){
+                console.log('文件保存成功!')
+                resolve();
+            }else {
+                reject(err);
+            }
+        });
+    })
+}
+
+/**
+ * 读取文件方法
+ * @param filePath
+ */
+function readFileAsync(filePath){
+    filePath = resolve(__dirname,'../accessToken',filePath);
+    return new Promise((resolve,reject)=>{
+        readFile(filePath,(err,data)=>{
+            if(!err){
+                //之前有保存文件
+                //将buffer数据转成json (data.toString()),再将json字符串转成js对象 (JSON.parse(data.toString())).
+                resolve(JSON.parse(data.toString()));
+            }else{
+                //之前没有保存文件
+                reject(err);
+            }
+        })
+    })
+}
+
 module.exports = {
     getUserDataAsync,
     parseXmlData,
-    formatJsData
+    formatJsData,
+    writeFileAsync,
+    readFileAsync
 }
 
